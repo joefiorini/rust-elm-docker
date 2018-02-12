@@ -1,0 +1,26 @@
+version: "3.4"
+services:
+  elm_build:
+    build:
+      dockerfile: ./Dockerfile
+      target: elm-build
+      context: .
+    image: elm-build:latest
+    volumes:
+      - type: bind
+        source: ./client
+        target: /src
+  api_server:
+    build:
+      dockerfile: ./Dockerfile
+      target: api-servr.dev
+      context: .
+    container_name: api_server
+    image: rocket-server:latest
+    working_dir: /src
+    volumes:
+      - type: bind
+        source: ./server
+        target: /src
+    ports:
+      - 8002:8000
