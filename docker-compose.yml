@@ -1,26 +1,55 @@
 version: "3.4"
 services:
+  elm_run:
+    build:
+      dockerfile: ./Dockerfile
+      target: elm-build
+      context: .
+    image: elm-build:latest
+    # command: ../node_modules/.bin/elm-reactor -a 0.0.0.0
+    command: elm-reactor -a 0.0.0.0
+    volumes:
+      - type: bind
+        source: ./client
+        target: /app/src
+      # Workaround to allow using node_modules locally
+      # (see https://github.com/BretFisher/node-docker-good-defaults/blob/master/docker-compose.yml#L21-L25)
+      - notused:/app/src/node_modules
+    ports:
+      - target: 8000
+        published: 8000
+        protocol: tcp
+        mode: host
+
   elm_build:
     build:
       dockerfile: ./Dockerfile
       target: elm-build
       context: .
     image: elm-build:latest
+    # command: ../node_modules/.bin/elm-make src/Main.elm
+    command: elm-make src/Main.elm
     volumes:
       - type: bind
         source: ./client
-        target: /src
+        target: /app/src
   api_server:
     build:
       dockerfile: ./Dockerfile
-      target: api-servr.dev
+      target: api-server.dev
       context: .
     container_name: api_server
     image: rocket-server:latest
+    command: cargo run
     working_dir: /src
     volumes:
       - type: bind
         source: ./server
         target: /src
     ports:
-      - 8002:8000
+      - target: 8000
+        published: 8002
+        protocol: tcp
+        mode: host
+volumes:
+  notused:

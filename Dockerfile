@@ -1,12 +1,27 @@
 FROM node:9.5.0 AS elm-build
 
-WORKDIR /src
+RUN mkdir -p /app/src
 
-CMD yarn --force && ./node_modules/.bin/elm-make src/Main.elm
+RUN yarn global add elm
+
+ENV PATH `yarn global bin`:$PATH
+# WORKDIR /app
+
+# COPY client/package.json client/yarn.lock ./
+# RUN yarn --frozen-lockfile && yarn cache clean
+
+WORKDIR /app/src
+COPY client/* /app/src/
+
+CMD yarn start
 
 FROM rustlang/rust:nightly AS api-server.dev
 
-VOLUME /src
+VOLUME ["/usr/local/cargo"]
+
 WORKDIR /src
 
-CMD cargo run
+RUN rustup override set nightly-2018-01-13 && \
+    cargo install cargo-watch
+
+CMD /usr/local/cargo/bin/cargo-watch -x run

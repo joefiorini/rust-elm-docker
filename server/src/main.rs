@@ -13,7 +13,7 @@ fn hello_name(name: String) -> String {
 }
 
 fn main() {
-    let (allowed_origins, failed_origins) = AllowedOrigins::some(&["http://localhost:8001"]);
+    let (allowed_origins, failed_origins) = AllowedOrigins::some(&["http://localhost:8000"]);
     assert!(failed_origins.is_empty());
 
     let options = rocket_cors::Cors {

@@ -61,7 +61,7 @@ subscriptions model =
 
 getGreeting : String -> Cmd Msg
 getGreeting name =
-    "http://localhost:8000/hello/"
+    "http://localhost:8002/hello/"
         ++ name
         |> Http.getString
         |> Http.send SetGreeting
